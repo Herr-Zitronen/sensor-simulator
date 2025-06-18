@@ -7,7 +7,7 @@ from datetime import timezone
 import ssl
 
 # Configuración del cliente MQTT
-broker = "broker"  
+broker = "test.mosquitto.org"  # Reemplazar con la URL del broker MQTT
 port = 8883
 topic = "sensor/temperature"
 client_id = f"sensor_{hex(random.getrandbits(24))[2:]}"
@@ -29,14 +29,10 @@ client.on_connect = on_connect
 client.on_disconnect = on_disconnect
 
 # Configuración de TLS
-client.tls_set(
-    ca_certs=None,  # Reemplazar con la ruta al certificado CA si es necesario
-    certfile=None,  # Reemplazar con la ruta al certificado del cliente si es necesario
-    keyfile=None,   # Reemplazar con la ruta a la clave del cliente si es necesario
-    tls_version=ssl.PROTOCOL_TLSv1_2,  # Usar TLS 1.2 o superior
-    ciphers=None
-)
-client.tls_insecure_set(False)  # Validar el certificado del servidor
+context = ssl.create_default_context()
+context.check_hostname = False
+context.verify_mode = ssl.CERT_NONE
+client.tls_set_context(context)
 
 # Conectar al broker
 try:
