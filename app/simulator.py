@@ -6,24 +6,20 @@ from datetime import datetime
 from datetime import timezone
 import ssl
 
-# Configuración del cliente MQTT
-broker = "test.mosquitto.org"  # Reemplazar con la URL del broker MQTT
+broker = "test.mosquitto.org" 
 port = 8883
 topic = "sensor/temperature"
 client_id = f"sensor_{hex(random.getrandbits(24))[2:]}"
 
-# Función que se llama al conectar exitosamente
 def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:
         print("Conectado al broker MQTT")
     else:
-        print(f"Error de conexión: código {reason_code}")
+        print(f"Error de conexión: código: {reason_code}")
 
-# Función que se llama en caso de desconexión
 def on_disconnect(client, userdata, flags, reason_code, properties):
     print(f"Desconectado del broker MQTT. Código: {reason_code}")
 
-# Crear cliente y asignar callbacks
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=client_id)
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
@@ -34,10 +30,9 @@ context.check_hostname = False
 context.verify_mode = ssl.CERT_NONE
 client.tls_set_context(context)
 
-# Conectar al broker
 try:
     client.connect(broker, port=port, keepalive=60)
-    client.loop_start()  # Inicia el bucle de red en segundo plano
+    client.loop_start()
 
     while True:
         temperature = round(random.uniform(15, 35), 2)  # Temperatura aleatoria entre 15 y 35
@@ -46,7 +41,7 @@ try:
             "timestamp": datetime.now(timezone.utc).isoformat()
         })
 
-        # Publicar el mensaje
+        # Publicar
         result = client.publish(topic, message, qos=1)
         status = result[0]
         if status == 0:
@@ -56,6 +51,7 @@ try:
 
         time.sleep(5)
 
+# ctrl-c
 except KeyboardInterrupt:
     print("Interrumpido por el usuario")
 except Exception as e:
