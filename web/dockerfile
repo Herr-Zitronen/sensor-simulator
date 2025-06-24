@@ -1,7 +1,5 @@
 FROM python:3.11-slim
 
-WORKDIR /web
-
 COPY . .
 
 RUN pip install flask

@@ -12,8 +12,9 @@
     <pre id="output">Esperando datos del sensor...</pre>
 
     <script>
-        const broker = "test.mosquitto.org";
-        const port = 8081;  // WebSocket sin TLS
+        
+        const broker = window.location.hostname; 
+        const port = 9001;
         const clientId = "web_" + Math.random().toString(16).substr(2, 8);
         const topic = "sensor/temperature";
 
@@ -21,17 +22,29 @@
 
         client.onConnectionLost = function (responseObject) {
             console.log("Conexión perdida:", responseObject.errorMessage);
+            document.getElementById("output").textContent = "Conexión perdida: " + responseObject.errorMessage;
         };
 
         client.onMessageArrived = function (message) {
             console.log("Mensaje recibido:", message.payloadString);
-            document.getElementById("output").textContent = message.payloadString;
+            try {
+                const data = JSON.parse(message.payloadString);
+                document.getElementById("output").textContent = 
+                    `Temperatura: ${data.temperature}°C\nTimestamp: ${data.timestamp}`;
+            } catch (e) {
+                document.getElementById("output").textContent = message.payloadString;
+            }
         };
 
         client.connect({
             onSuccess: () => {
                 console.log("Conectado al broker MQTT");
                 client.subscribe(topic);
+                document.getElementById("output").textContent = "Conectado al broker MQTT. Esperando datos...";
+            },
+            onFailure: (err) => {
+                console.error("Error de conexión:", err);
+                document.getElementById("output").textContent = "Error de conexión: " + JSON.stringify(err);
             },
             useSSL: false
         });

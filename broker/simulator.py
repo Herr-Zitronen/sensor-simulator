@@ -6,8 +6,8 @@ from datetime import datetime
 from datetime import timezone
 import ssl
 
-broker = "test.mosquitto.org" 
-port = 8883
+broker = "mosquitto"  
+port = 1883
 topic = "sensor/temperature"
 client_id = f"sensor_{hex(random.getrandbits(24))[2:]}"
 
@@ -24,11 +24,12 @@ client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=client_id)
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
 
-# Configuración de TLS
-context = ssl.create_default_context()
-context.check_hostname = False
-context.verify_mode = ssl.CERT_NONE
-client.tls_set_context(context)
+# Configuración TLS
+#context = ssl.create_default_context() 
+#context.check_hostname = False
+#context.verify_mode = ssl.CERT_NONE
+#lient.tls_set_context(context)
+
 
 try:
     client.connect(broker, port=port, keepalive=60)
