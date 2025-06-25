@@ -39,7 +39,9 @@ try:
         temperature = round(random.uniform(15, 35), 2)  # Temperatura aleatoria entre 15 y 35
         message = json.dumps({
             "temperature": temperature,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            #"timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
         })
 
         # Publicar
